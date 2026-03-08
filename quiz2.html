@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>แบบทดสอบทายคณะที่เหมาะกับนิสัย</title>
+
+<style>
+
+body{
+font-family: "Prompt", sans-serif;
+background: linear-gradient(135deg,#7f9cff,#c2d3ff);
+padding:40px;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+background:white;
+padding:35px;
+border-radius:20px;
+box-shadow:0 10px 25px rgba(0,0,0,0.15);
+}
+
+h1{
+text-align:center;
+margin-bottom:10px;
+}
+
+.subtitle{
+text-align:center;
+color:#666;
+margin-bottom:30px;
+}
+
+.question{
+margin-bottom:25px;
+padding:15px;
+border-radius:10px;
+background:#f7f9ff;
+}
+
+.question p{
+font-weight:bold;
+}
+
+label{
+display:block;
+margin:5px 0;
+cursor:pointer;
+}
+
+button{
+display:block;
+margin:auto;
+margin-top:25px;
+background:#4c6fff;
+color:white;
+border:none;
+padding:14px 28px;
+border-radius:10px;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:#2d4bff;
+}
+
+.result-box{
+margin-top:30px;
+padding:25px;
+background:#eef2ff;
+border-radius:15px;
+}
+
+.bar{
+height:12px;
+background:#dfe6ff;
+border-radius:10px;
+margin-bottom:10px;
+overflow:hidden;
+}
+
+.fill{
+height:12px;
+background:#4c6fff;
+}
+
+.restart{
+background:#666;
+margin-top:15px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>แบบทดสอบทายคณะที่เหมาะกับนิสัย</h1>
+<p class="subtitle">เลือกคำตอบที่ตรงกับตัวเองมากที่สุด</p>
+
+<form id="quiz"></form>
+
+<button onclick="calculate()">ดูผลลัพธ์</button>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+const questions=[
+"เวลาว่างมักชอบทำอะไร",
+"ถ้ามีโจทย์ยาก ๆ ให้แก้ จะเริ่มจากอะไร",
+"สิ่งที่รู้สึกภูมิใจที่สุดคืออะไร",
+"ถ้าได้ทำงานในอนาคต อยากทำงานแบบไหน",
+"เวลาทำงานกลุ่ม มักรับบทบาทใด",
+"ถ้ามีปัญหาเกิดขึ้น จะจัดการอย่างไร",
+"สิ่งที่สำคัญที่สุดในการเรียนรู้",
+"ถ้าได้เลือกเรียนวิชาเสริม",
+"เวลาทำงานภายใต้ความกดดัน",
+"คำชมที่อยากได้มากที่สุด"
+]
+
+const answers=[
+["ประดิษฐ์สิ่งของ","ทดลองสิ่งใหม่","อ่านหนังสือหรือฟังเพลง","ศึกษาสุขภาพ","ช่วยสอนคนอื่น"],
+["วางแผนเป็นขั้นตอน","วิเคราะห์ข้อมูล","คิดสร้างสรรค์","ศึกษาลึก","ปรึกษาเพื่อน"],
+["สร้างสิ่งที่ใช้งานได้จริง","ค้นพบคำตอบใหม่","ถ่ายทอดผ่านศิลปะ","ช่วยคนสุขภาพดี","เห็นคนที่สอนสำเร็จ"],
+["งานเทคโนโลยี","งานวิจัย","งานภาษา","งานโรงพยาบาล","งานสอน"],
+["วางแผน","หาข้อมูล","เสนอไอเดีย","ตรวจรายละเอียด","อธิบายให้ทีมเข้าใจ"],
+["แก้เชิงเทคนิค","วิเคราะห์สาเหตุ","คิดทางใหม่","ตรวจสอบหลักฐาน","พูดคุยร่วมกัน"],
+["ใช้ได้จริง","ถูกต้องตามวิทยาศาสตร์","การสื่อสาร","ความละเอียด","เข้าใจผู้อื่น"],
+["เทคโนโลยี","เคมี ฟิสิกส์","ภาษา","เภสัช","จิตวิทยา"],
+["จัดลำดับงาน","ใช้เหตุผล","ฟังเพลง","ตรวจซ้ำ","ขอคำปรึกษา"],
+["เก่งเทคนิค","วิเคราะห์เก่ง","สร้างสรรค์","รอบคอบ","สอนเก่ง"]
+]
+
+const types=["A","B","C","D","E"]
+
+const quiz=document.getElementById("quiz")
+
+questions.forEach((q,i)=>{
+
+let div=document.createElement("div")
+div.className="question"
+
+let html=`<p>${i+1}. ${q}</p>`
+
+answers[i].forEach((a,index)=>{
+html+=`<label><input type="radio" name="q${i}" value="${types[index]}"> ${a}</label>`
+})
+
+div.innerHTML=html
+quiz.appendChild(div)
+
+})
+
+function calculate(){
+
+let score={A:0,B:0,C:0,D:0,E:0}
+
+for(let i=0;i<10;i++){
+
+let ans=document.querySelector(`input[name="q${i}"]:checked`)
+
+if(ans) score[ans.value]++
+
+}
+
+let total=10
+
+let percent={}
+
+for(let key in score){
+percent[key]=Math.round((score[key]/total)*100)
+}
+
+let max=Object.keys(score).reduce((a,b)=>score[a]>score[b]?a:b)
+
+let resultText=""
+
+if(max=="A")
+resultText="คณะวิศวกรรมศาสตร์: เหมาะกับผู้ที่ชอบคิดเชิงระบบ แก้ปัญหาเชิงเทคนิค และสร้างสิ่งใหม่"
+
+if(max=="B")
+resultText="คณะวิทยาศาสตร์: เหมาะกับผู้ที่รักการค้นคว้า ตั้งคำถาม และหาคำตอบด้วยหลักฐาน"
+
+if(max=="C")
+resultText="คณะศิลปศาสตร์: เหมาะกับผู้ที่รักการสื่อสาร ภาษา และความคิดสร้างสรรค์"
+
+if(max=="D")
+resultText="คณะเภสัชศาสตร์: เหมาะกับผู้ที่ละเอียด รอบคอบ และสนใจสุขภาพ"
+
+if(max=="E")
+resultText="คณะศึกษาศาสตร์: เหมาะกับผู้ที่รักการสอนและพัฒนาผู้อื่น"
+
+let html=`
+<div class="result-box">
+
+<h2>ผลลัพธ์ของคุณ</h2>
+<p>${resultText}</p>
+
+<h3>เปอร์เซ็นความเหมาะสม</h3>
+
+<p>วิศวกรรมศาสตร์ ${percent.A}%</p>
+<div class="bar"><div class="fill" style="width:${percent.A}%"></div></div>
+
+<p>วิทยาศาสตร์ ${percent.B}%</p>
+<div class="bar"><div class="fill" style="width:${percent.B}%"></div></div>
+
+<p>ศิลปศาสตร์ ${percent.C}%</p>
+<div class="bar"><div class="fill" style="width:${percent.C}%"></div></div>
+
+<p>เภสัชศาสตร์ ${percent.D}%</p>
+<div class="bar"><div class="fill" style="width:${percent.D}%"></div></div>
+
+<p>ศึกษาศาสตร์ ${percent.E}%</p>
+<div class="bar"><div class="fill" style="width:${percent.E}%"></div></div>
+
+<button class="restart" onclick="location.reload()">ทำแบบทดสอบใหม่</button>
+
+</div>
+`
+
+document.getElementById("result").innerHTML=html
+
+}
+
+</script>
+
+</body>
+</html>
